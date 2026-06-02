@@ -5,7 +5,6 @@
 <title>Aperture Terminal</title>
 
 <style>
-
 body{
     margin:0;
     background:#000;
@@ -14,7 +13,7 @@ body{
     overflow:hidden;
 }
 
-/* FLICKER EFFECT */
+/* FLICKER */
 body.flicker{
     animation:flicker .12s infinite;
 }
@@ -55,23 +54,6 @@ input{
     width:100%;
 }
 
-/* MUSIC BUTTON */
-#musicBtn{
-    position:fixed;
-    top:10px;
-    right:10px;
-    background:#111;
-    color:#ff8c00;
-    border:1px solid #ff8c00;
-    padding:8px 12px;
-    cursor:pointer;
-    font-family:Consolas;
-}
-
-#musicBtn:hover{
-    background:#222;
-}
-
 /* CREDITS */
 #credits{
     position:fixed;
@@ -103,46 +85,54 @@ input{
     font-family:Consolas;
     font-size:18px;
 }
-
 </style>
 </head>
 
 <body>
 
-<!-- MUSIC -->
-<audio id="bgm" loop autoplay muted>
-    <source src="Portal 2 OST Volume 3 - Caroline Deleted.mp3" type="audio/mpeg">
+<audio id="bgm" loop>
+    <source src="audio.mp3" type="audio/mpeg">
 </audio>
 
 <div id="terminal"></div>
 
 <script>
 
-const terminal=document.getElementById("terminal");
-const bgm=document.getElementById("bgm");
-const musicBtn=document.getElementById("musicBtn");
-
-let musicOn=false;
-
-/* MUSIC TOGGLE */
+const terminal = document.getElementById("terminal");
 const bgm = document.getElementById("bgm");
 
-/* try to start immediately */
-window.addEventListener("load", async () => {
-    try {
-        await bgm.play(); // starts muted (allowed)
-        
-        // unmute after tiny delay
-        setTimeout(() => {
-            bgm.muted = false;
-            bgm.volume = 0.5;
-        }, 300);
-        
-    } catch (e) {
-        // fallback: still blocked until user input
-        console.log("Autoplay blocked by browser");
-    }
+/* AUDIO AUTO START (browser-safe) */
+let musicStarted = false;
+
+function startMusic(){
+    if(musicStarted) return;
+    musicStarted = true;
+
+    bgm.volume = 0.5;
+
+    bgm.play().catch(()=>{});
+}
+
+document.addEventListener("click", startMusic);
+document.addEventListener("keydown", startMusic);
+
+/* TYPE SYSTEM */
+function typeLine(text, speed=10){
+return new Promise(resolve=>{
+let i=0;
+function step(){
+if(i<text.length){
+terminal.innerHTML+=text[i];
+i++;
+setTimeout(step,speed);
+}else{
+terminal.innerHTML+="\n";
+resolve();
+}
+}
+step();
 });
+}
 
 /* BOOT */
 async function boot(){
@@ -150,13 +140,9 @@ async function boot(){
 const intro=[
 "APERTURE SCIENCE COMPUTER-AIDED ENRICHMENT CENTER",
 "",
-"-----------------------------------",
-"",
 "[ OK ] Core Systems Online",
 "[ OK ] AI Interface Active",
 "[ OK ] Monitoring Systems Stable",
-"",
-"-----------------------------------",
 "",
 "Type 'bio' or 'end'"
 ];
@@ -176,36 +162,26 @@ row.className="input-line";
 
 row.innerHTML=`
 <span class="prompt">aperture@facility:~$</span>
-<input id="cmd" autofocus>
+<input autofocus>
 `;
 
 terminal.appendChild(row);
 
 const input=row.querySelector("input");
-
 input.focus();
 
-/* unlock audio on first interaction */
-input.addEventListener("keydown",()=>{
-    if(!musicOn){
-        bgm.play();
-        musicBtn.textContent="⏸ MUSIC";
-        musicOn=true;
-    }
-});
-
 input.addEventListener("keydown",(e)=>{
+
+startMusic(); // unlock audio on first input
+
 if(e.key==="Enter"){
 
 const cmd=input.value.trim().toLowerCase();
-
 row.remove();
-
 run(cmd);
-
 }
-});
 
+});
 }
 
 /* COMMANDS */
@@ -217,7 +193,7 @@ if(cmd==="bio"){
 
 await typeLine(
 `NAME: ARTEM
-ROLE: DEVELOPER, PROGRAMIST
+ROLE: DEVELOPER
 STATUS: ACTIVE`,
 8
 );
@@ -236,14 +212,11 @@ createInput();
 }
 
 /* FLICKER */
-function startFlicker(){
+function flicker(){
 document.body.classList.add("flicker");
-setTimeout(()=>{
-document.body.classList.remove("flicker");
-},4000);
+setTimeout(()=>document.body.classList.remove("flicker"),4000);
 }
-
-setInterval(()=>startFlicker(),12000);
+setInterval(flicker,12000);
 
 /* CREDITS */
 function startCredits(){
@@ -265,11 +238,7 @@ GLaDOS
 COMPANION CUBE
 THE FACILITY
 
-...
-
 THIS WAS A TRIUMPH
-
-I'M MAKING A NOTE HERE:
 
 HUGE SUCCESS
 
