@@ -91,7 +91,7 @@ input{
 
 <body>
 
-<audio id="bgm" loop muted>
+<audio id="bgm" loop>
     <source src="./audio/audio.mp3" type="audio/mpeg">
 </audio>
 
@@ -155,7 +155,7 @@ const intro=[
 "",
 "----------------------------------------",
 "",
-"Type 'bio' or 'end'"
+"Type 'help' For commands"
 ];
 
 for(const line of intro){
@@ -208,7 +208,14 @@ ROLE: DEVELOPER, PROGRAMIST
 STATUS: ACTIVE`,
 8
 );
+if(cmd==="help"){
 
+await typeLine(
+`COMMANDS LIST:
+      BIO
+      END`,
+8
+);
 createInput();
 return;
 }
