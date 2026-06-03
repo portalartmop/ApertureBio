@@ -90,6 +90,39 @@ input::placeholder{
     opacity:0.5;
 }
 
+/* SOCIAL BUTTONS */
+.social-buttons{
+    display:flex;
+    gap:15px;
+    margin-top:15px;
+    flex-wrap:wrap;
+}
+
+.social-btn{
+    background:none;
+    border:2px solid #ff8c00;
+    color:#ff8c00;
+    padding:8px 16px;
+    cursor:pointer;
+    font-family:Consolas,monospace;
+    font-size:12px;
+    text-decoration:none;
+    display:inline-block;
+    transition:all 0.3s ease;
+    text-shadow:0 0 8px #ff8c00;
+}
+
+.social-btn:hover{
+    background:#ff8c00;
+    color:#000;
+    box-shadow:0 0 15px #ff8c00;
+    text-shadow:none;
+}
+
+.social-btn:active{
+    transform:scale(0.95);
+}
+
 /* CREDITS */
 #credits{
     position:fixed;
@@ -139,7 +172,8 @@ input::placeholder{
 ⠀⣿⢯⣾⣿⠀⠀⠀⠀⠀⠀⠀⠠⠿⠟⠉⠉⠿⠿⠀⠸⠿⠃⠀⠀⠀⠰⠿⠿⠿⠿⠃⠠⠿⠇⠠⠿⠯⠀⠀⠸⠿⠁⠀⠀⠘⠿⣷⡾⠿⠃⠀⠼⠿⠀⠸⠿⠅⠠⠿⠿⠿⠿⠃⠀
 ⠀⠀⣿⣿⣿⡼⣦⣄⢀⣀⣤⣤⣴⣶⣶⡿⠁⠀⡆⠀⠀⢀⣶⡄⠀⢰⣖⣲⠀⢠⡖⠒⡆⠀⢰⣖⡦⠀⢀⣴⡄⠀⠒⣶⠒⠀⣰⠖⢲⠀⠀⣶⣲⠄⠀⡆⠀⢰⣒⡂⠀⣶⣒⡆⠀
 ⠀⠀⠈⠻⣿⡇⣿⣿⣷⣮⣻⢿⣿⡿⠏⠀⠀⠀⠓⠲⠀⠞⠉⠹⠀⠘⠓⠚⠀⠈⠳⠖⠃⠀⠸⠀⠗⠀⠞⠉⠹⠂⠀⠻⠀⠀⠘⠲⠞⠀⠀⠇⠘⠆⠀⠇⠀⠘⠒⠆⠀⠓⠶⠃⠀
-⠀⠀⠀⠀⠈⠙⠘⠿⠿⠿⠟⠓⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀</pre>
+⠀⠀⠀⠀⠈⠙⠘⠿⠿⠿⠟⠓⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+</pre>
 </div>
 
 <div id="terminal"></div>
@@ -252,10 +286,20 @@ async function run(cmd){
         await typeLine(
             `NAME: ARTEM
 ROLE: DEVELOPER, PROGRAMIST
-STATUS: ACTIVE
-SOCIALS: DISCORD,REDDIT,GITHUB`,
+STATUS: ACTIVE`,
             8
         );
+        
+        // Add social media buttons
+        const bioDiv = document.createElement("div");
+        bioDiv.className = "social-buttons";
+        bioDiv.innerHTML = `
+            <a href="https://discord.com" target="_blank" class="social-btn">[ DISCORD ]</a>
+            <a href="https://reddit.com" target="_blank" class="social-btn">[ REDDIT ]</a>
+            <a href="https://github.com/portalartmop" target="_blank" class="social-btn">[ GITHUB ]</a>
+        `;
+        terminal.appendChild(bioDiv);
+        
         createInput();
         return;
     }
