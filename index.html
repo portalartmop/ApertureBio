@@ -28,12 +28,30 @@ body.flicker{
     100%{opacity:.95}
 }
 
+/* LOGO CONTAINER */
+#logo-container{
+    position:fixed;
+    top:25px;
+    left:25px;
+    font-size:11px;
+    line-height:1.2;
+    white-space:pre;
+    color:#ff8c00;
+    text-shadow:0 0 8px #ff8c00;
+    z-index:10;
+    user-select:none;
+    pointer-events:none;
+    font-family:Consolas,monospace;
+}
+
 /* TERMINAL */
 #terminal{
     padding:25px;
+    padding-left:250px;
     white-space:pre-wrap;
     line-height:1.6;
     text-shadow:0 0 8px #ff8c00;
+    min-height:100vh;
 }
 
 /* INPUT */
@@ -55,13 +73,18 @@ input{
     width:100%;
 }
 
+input::placeholder{
+    color:#ff8c00;
+    opacity:0.5;
+}
+
 /* CREDITS */
 #credits{
     position:fixed;
     inset:0;
     background:black;
     color:#ff8c00;
-    font-family:Arial;
+    font-family:Consolas,monospace;
     text-align:center;
     padding-top:40vh;
     font-size:26px;
@@ -95,12 +118,41 @@ input{
     <source src="./audio/audio.mp3" type="audio/mpeg">
 </audio>
 
+<div id="logo-container"></div>
 <div id="terminal"></div>
 
 <script>
 
 const terminal = document.getElementById("terminal");
+const logoContainer = document.getElementById("logo-container");
 const bgm = document.getElementById("bgm");
+
+/* ASCII LOGOS */
+const logos = [
+`    ___    ____  ____  __________  ____________
+   / _ |  / __ \\/ __ \\/_  __/ / / / ____/ ____/
+  / __ | / /_/ / / / / / / / / / / __/ / __/   
+ / ___ |/ ____/ /_/ / / / / /_/ / /___/ /___   
+/_/  |_/_/   \\____/ /_/  \\____/_____/_____/   `,
+`
+  ╔═══════════════════════════════╗
+  ║    APERTURE SCIENCE LAB       ║
+  ║      TEST CHAMBER ACTIVE      ║
+  ╚═══════════════════════════════╝`,
+`
+   █████╗ ██████╗ ███████╗██████╗ ████████╗██╗   ██╗██████╗ ███████╗
+  ██╔══██╗██╔══██╗██╔════╝██╔══██╗╚══██╔══╝██║   ██║██╔══██╗██╔════╝
+  ███████║██████╔╝█████╗  ██████╔╝   ██║   ██║   ██║██████╔╝█████╗  
+  ██╔══██║██╔═══╝ ██╔══╝  ██╔══██╗   ██║   ██║   ██║██╔══██╗██╔══╝  
+  ██║  ██║██║     ███████╗██║  ██║   ██║   ╚██████╔╝██║  ██║███████╗
+  ╚═╝  ╚═╝╚═╝     ╚══════╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝╚══════╝`
+];
+
+let currentLogoIndex = 0;
+
+function displayLogo(){
+    logoContainer.textContent = logos[currentLogoIndex];
+}
 
 /* AUDIO AUTO START (browser-safe) */
 let musicStarted = false;
@@ -126,121 +178,146 @@ document.addEventListener("touchstart", startMusic);
 
 /* TYPE SYSTEM */
 function typeLine(text, speed=10){
-return new Promise(resolve=>{
-let i=0;
-function step(){
-if(i<text.length){
-terminal.innerHTML+=text[i];
-i++;
-setTimeout(step,speed);
-}else{
-terminal.innerHTML+="\n";
-resolve();
-}
-}
-step();
-});
+    return new Promise(resolve=>{
+        let i=0;
+        function step(){
+            if(i<text.length){
+                terminal.innerHTML+=text[i];
+                i++;
+                setTimeout(step,speed);
+            }else{
+                terminal.innerHTML+="\n";
+                resolve();
+            }
+        }
+        step();
+    });
 }
 
 /* BOOT */
 async function boot(){
 
-const intro=[
-"APERTURE SCIENCE COMPUTER-AIDED ENRICHMENT CENTER",
-"",
-"----------------------------------------",
-"[ OK ] Core Systems Online",
-"[ OK ] AI Interface Active",
-"[ OK ] Monitoring Systems Stable",
-"",
-"----------------------------------------",
-"",
-"Type 'help' For commands"
-];
+    displayLogo();
 
-for(const line of intro){
-await typeLine(line,8);
-}
+    const intro=[
+        "APERTURE SCIENCE COMPUTER-AIDED ENRICHMENT CENTER",
+        "",
+        "----------------------------------------",
+        "[ OK ] Core Systems Online",
+        "[ OK ] AI Interface Active",
+        "[ OK ] Monitoring Systems Stable",
+        "",
+        "----------------------------------------",
+        "",
+        "Type 'help' for available commands"
+    ];
 
-createInput();
+    for(const line of intro){
+        await typeLine(line,8);
+    }
+
+    createInput();
 }
 
 /* INPUT */
 function createInput(){
 
-const row=document.createElement("div");
-row.className="input-line";
+    const row=document.createElement("div");
+    row.className="input-line";
 
-row.innerHTML=`
-<span class="prompt">aperture@facility:~$</span>
-<input autofocus>
-`;
+    row.innerHTML=`
+        <span class="prompt">aperture@facility:~$</span>
+        <input autofocus placeholder="">
+    `;
 
-terminal.appendChild(row);
+    terminal.appendChild(row);
 
-const input=row.querySelector("input");
-input.focus();
+    const input=row.querySelector("input");
+    input.focus();
 
-input.addEventListener("keydown",(e)=>{
+    input.addEventListener("keydown",(e)=>{
 
-startMusic(); // unlock audio on first input
+        startMusic(); // unlock audio on first input
 
-if(e.key==="Enter"){
+        if(e.key==="Enter"){
 
-const cmd=input.value.trim().toLowerCase();
-row.remove();
-run(cmd);
-}
+            const cmd=input.value.trim().toLowerCase();
+            row.remove();
+            run(cmd);
+        }
 
-});
+    });
 }
 
 /* COMMANDS */
 async function run(cmd){
 
-terminal.innerHTML+="aperture@facility:~$ "+cmd+"\n";
+    terminal.innerHTML+="aperture@facility:~$ "+cmd+"\n";
 
-if(cmd==="bio"){
-
-await typeLine(
-`NAME: ARTEM
+    if(cmd==="bio"){
+        await typeLine(
+            `NAME: ARTEM
 ROLE: DEVELOPER, PROGRAMIST
 STATUS: ACTIVE`,
-8
-);
-if(cmd==="help"){
+            8
+        );
+        createInput();
+        return;
+    }
 
-await typeLine(
-`COMMANDS LIST:
-      BIO
-      END`,
-8
-);
-createInput();
-return;
-}
+    if(cmd==="help"){
+        await typeLine(
+            `COMMANDS LIST:
+  bio        - Display developer information
+  logo       - Cycle ASCII logo design
+  end        - Start credits sequence
+  clear      - Clear terminal screen`,
+            8
+        );
+        createInput();
+        return;
+    }
 
-if(cmd==="end"){
-startCredits();
-return;
-}
+    if(cmd==="logo"){
+        currentLogoIndex = (currentLogoIndex + 1) % logos.length;
+        displayLogo();
+        await typeLine("Logo design changed",8);
+        createInput();
+        return;
+    }
 
-await typeLine("unknown command",8);
-createInput();
+    if(cmd==="end"){
+        startCredits();
+        return;
+    }
+
+    if(cmd==="clear"){
+        terminal.innerHTML="";
+        createInput();
+        return;
+    }
+
+    if(cmd===""){
+        createInput();
+        return;
+    }
+
+    await typeLine(`unknown command '${cmd}' - type 'help' for available commands`,8);
+    createInput();
 }
 
 /* FLICKER */
 function flicker(){
-document.body.classList.add("flicker");
-setTimeout(()=>document.body.classList.remove("flicker"),4000);
+    document.body.classList.add("flicker");
+    setTimeout(()=>document.body.classList.remove("flicker"),4000);
 }
 setInterval(flicker,12000);
 
 /* CREDITS */
 function startCredits(){
 
-document.body.innerHTML=`
-<div id="credits">
+    document.body.innerHTML=`
+    <div id="credits">
 APERTURE SCIENCE 
 
 TEST COMPLETE
@@ -261,20 +338,20 @@ THIS WAS A TRIUMPH
 HUGE SUCCESS
 
 THE CAKE IS A LIE
-</div>
-`;
+    </div>
+    `;
 
-setTimeout(shutdown,24000);
+    setTimeout(shutdown,24000);
 }
 
 /* SHUTDOWN */
 function shutdown(){
-document.body.innerHTML=`
-<div id="shutdown">
+    document.body.innerHTML=`
+    <div id="shutdown">
 SYSTEM SHUTDOWN COMPLETE<br>
 SIGNAL LOST
-</div>
-`;
+    </div>
+    `;
 }
 
 boot();
