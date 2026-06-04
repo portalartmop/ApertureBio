@@ -552,6 +552,22 @@ function typeLine(text, speed=10){
         step();
     });
 }
+function typeLinefaster(text, speed=50){
+    return new Promise(resolve=>{
+        let i=0;
+        function step(){
+            if(i<text.length){
+                terminal.innerHTML+=text[i];
+                i++;
+                setTimeout(step,speed);
+            }else{
+                terminal.innerHTML+="\n";
+                resolve();
+            }
+        }
+        step();
+    });
+}
 
 /* BOOT */
 async function boot(){
@@ -926,7 +942,7 @@ STATUS: ACTIVE
     }
     if (cmd==="ariral"){
         terminal.innerHTML="";
-        await typeLine(`
+        await typeLinefaster(`
 =========================-:::=-:..:::--=:..........::-:::-:=======================++++++++============
 ==========================-::=+=-:-=====-::.::::::.:--=--=-===================+++++===================
 ========================================+-:-:---:---+==================+++++++++++++==================
