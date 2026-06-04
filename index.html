@@ -11,7 +11,11 @@ body{
     background:#000;
     color:#ff8c00;
     font-family:Consolas,monospace;
-    overflow:hidden;
+    height: 400px; /* Set a fixed height */
+    overflow-y: scroll; /* Enables vertical scrolling */
+    overflow-x: hidden; /* Disables horizontal scrolling */
+    scroll-behavior: smooth;
+    overflow: auto;
 }
 
 /* FLICKER */
@@ -180,14 +184,7 @@ input::placeholder{
     position:relative;
     text-shadow:0 0 10px #ff8c00;
 }
-scrollable {
-    height: 400px; /* Set a fixed height */
-    overflow-y: scroll; /* Enables vertical scrolling */
-    overflow-x: hidden; /* Disables horizontal scrolling */
-    scroll-behavior: smooth;
-    overflow: auto;
-}
-    
+
 .hack-bar-fill{
     height:100%;
     background:#ff8c00;
